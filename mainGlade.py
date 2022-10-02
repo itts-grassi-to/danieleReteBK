@@ -19,7 +19,7 @@ class Eventi:
     def on_click_nuovo(self, button):
         gestione.on_nuovo_clicked(lstBKS)
     def on_click_modifica(self, button):
-        print("modifica")
+        gestione.on_modifica_clicked()
     def on_click_cancella(self, button):
         print("Cancella")
     def on_showClick(self, button):
