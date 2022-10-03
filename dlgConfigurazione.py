@@ -4,6 +4,7 @@
 import gi
 import ast
 import os
+import segnali
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
@@ -535,10 +536,16 @@ class DlgConf(Gtk.Window):
             data.write(str(self.bks))
             data.close()
         # print(self.bks)
-        # self.parent.set_restart_impostazioni()
-        msg = Msg(self)
-        msg.set_msg("Salvato HO")
-
+        self.parent.invia(segnali.RESTART)
+        dialog = Gtk.MessageDialog(
+            transient_for=None,
+            flags=0,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.CLOSE,
+            text="Salvato HO",
+        )
+        dialog.run()
+        dialog.destroy()
     def on_salva_clicked(self, widget):
         # print("salva")
         self.__salvaTutto()

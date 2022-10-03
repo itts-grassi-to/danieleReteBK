@@ -41,6 +41,7 @@ class bkFile():
         # print(ch)
 
     def _esegui(self, ch):
+        self._printa("********************** Inizia thread: "+ch)
         self.__inizializza_backup(ch)
         self._flog.write("Variabili inizializzate")
         if self.__inizializza_paths():
