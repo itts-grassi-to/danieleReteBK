@@ -4,6 +4,10 @@
 import ast
 import gi
 import os
+import socket
+
+HOST = "127.0.0.1"  # The server's hostname or IP address
+PORT = 65432  # The port used by the server
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -16,7 +20,7 @@ STRUTTURA_CONFIGURAZIONE={
 class GMain:
     def __init__(self, path_fconf, lst):
         self.path_fconf = path_fconf
-        self.lstMain=lst
+        self.lstMain = lst
         if not os.path.isfile(path_fconf):
             with open(path_fconf, "w") as f:
                 #print(str(STRUTTURA_CONFIGURAZIONE))
@@ -25,6 +29,16 @@ class GMain:
         self.__bks = self.__configurazione['bks']
         self.lst_chiavi=[]
         self.__attach_rows(lst)
+    def __invia(self, richi):
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((HOST, PORT))
+            s.sendall(richi)
+            #data = s.recv(1024)
+
+        print(f"Received {data!r}")
+    def on_cancella_clicked(self):
+        self.__invia(b"Hello, world")
     def on_modifica_clicked(self):
         if not self.lstMain.get_selected_row():
             dialog = Gtk.MessageDialog(

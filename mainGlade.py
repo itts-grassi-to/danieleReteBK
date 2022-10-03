@@ -21,7 +21,7 @@ class Eventi:
     def on_click_modifica(self, button):
         gestione.on_modifica_clicked()
     def on_click_cancella(self, button):
-        print("Cancella")
+        gestione.on_cancella_clicked()
     def on_showClick(self, button):
         #print("clicked")
         pop.popup()
