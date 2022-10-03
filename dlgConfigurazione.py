@@ -100,7 +100,7 @@ class DlgNuovo(Gtk.Window):
                 'attivo': True ,'titolo': titolo,
                 'dirDA': {'remoto': False, 'da': '', 'mnt': ch+"DA"},
                 'dirTO': {'remoto': False, 'to': '', 'mnt': ch+"TO"},
-                'cron': {'minuto': '1', 'ora': '0', 'giorno': '1', 'mese': '1', 'settimana': [1, 2]}
+                'cron': {'minuto': '', 'ora': '', 'giorno': '', 'mese': '', 'settimana': []}
             }
         self.__parent.lst_chiavi.append(ch)
         os.system("mkdir -p " + self.__configurazione['bks'][ch]['dirDA']['mnt'])
@@ -535,7 +535,7 @@ class DlgConf(Gtk.Window):
             data.write(str(self.bks))
             data.close()
         # print(self.bks)
-        self.parent.set_restart_impostazioni()
+        # self.parent.set_restart_impostazioni()
         msg = Msg(self)
         msg.set_msg("Salvato HO")
 

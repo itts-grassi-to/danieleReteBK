@@ -10,7 +10,7 @@ from gmain import GMain
 
 CURRDIR = os.path.dirname(os.path.abspath(__file__))
 GLADE = os.path.join(CURRDIR, 'mainGBK.glade')
-PATH_CONF = os.path.join(CURRDIR, 'danieleGBK.conf')
+PATH_CONF = os.path.join(CURRDIR, 'danieleReteBK.conf')
 
 
 class Eventi:

@@ -1,23 +1,42 @@
+# ## CREATO DA ORTU prof. DANIELE
+# ## daniele.ortu@itisgrassi.edu.it
+
 import ast
 import gi
 import os
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
-from dlgConfigurazione import DlgNuovo,DlgConf
+from dlgConfigurazione import DlgNuovo, DlgConf
+
+STRUTTURA_CONFIGURAZIONE={
+            'bks': {},
+            'altro': {'mailFROM': '', 'mailTO': ''}
+}
 class GMain:
     def __init__(self, path_fconf, lst):
         self.path_fconf = path_fconf
         self.lstMain=lst
         if not os.path.isfile(path_fconf):
             with open(path_fconf, "w") as f:
-                #print(str({'bks': {}, 'altro': {}}))
-                f.write(str({'bks':{}, 'altro':{}}))
+                #print(str(STRUTTURA_CONFIGURAZIONE))
+                f.write(str(STRUTTURA_CONFIGURAZIONE))
         self.__configurazione = self.get_impostazioni(self.path_fconf)
         self.__bks = self.__configurazione['bks']
         self.lst_chiavi=[]
         self.__attach_rows(lst)
     def on_modifica_clicked(self):
+        if not self.lstMain.get_selected_row():
+            dialog = Gtk.MessageDialog(
+                transient_for=None,
+                flags=0,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.CLOSE,
+                text="Seleziona il backup da modificare",
+            )
+            dialog.run()
+            dialog.destroy()
+            return
         w = DlgConf(self, self.path_fconf)
         w.connect("destroy", Gtk.main_quit)
         w.set_modal(True)
