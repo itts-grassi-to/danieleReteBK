@@ -21,7 +21,7 @@ class Eventi:
     def on_click_modifica(self, button):
         gestione.on_modifica_clicked()
     def on_click_cancella(self, button):
-        gestione.on_cancella_clicked()
+        pass
     def on_showClick(self, button):
         #print("clicked")
         pop.popup()
@@ -37,7 +37,8 @@ builder.connect_signals(Eventi())
 window = builder.get_object('MainWin')
 pop = builder.get_object('popover')
 lstBKS = builder.get_object('lstBKS')
-gestione = GMain(PATH_CONF, lstBKS)
+lblLed=builder.get_object('lblLed')
+gestione = GMain(PATH_CONF, lstBKS, lblLed)
 
 # window.set_icon_from_file(ICON)
 window.connect("destroy", Gtk.main_quit)

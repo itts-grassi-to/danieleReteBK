@@ -6,6 +6,7 @@ import gi
 import os
 import socket
 
+import segnali
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT = 65432  # The port used by the server
@@ -18,25 +19,35 @@ STRUTTURA_CONFIGURAZIONE={
             'bks': {},
             'altro': {'mailFROM': '', 'mailTO': ''}
 }
+SPAZI="    "
 class GMain:
-    def __init__(self, path_fconf, lst):
+    def __init__(self, path_fconf, lst, lblLed):
         self.path_fconf = path_fconf
         self.lstMain = lst
+        self.__lblLed=lblLed
         if not os.path.isfile(path_fconf):
             with open(path_fconf, "w") as f:
                 #print(str(STRUTTURA_CONFIGURAZIONE))
                 f.write(str(STRUTTURA_CONFIGURAZIONE))
         self.__configurazione = self.get_impostazioni(self.path_fconf)
         self.__bks = self.__configurazione['bks']
-        self.lst_chiavi=[]
+        self.lst_chiavi = []
         self.__attach_rows(lst)
+        self.__setLed()
+    def __setLed(self):
+        if self.invia(segnali.IS_ATTIVO) == segnali.OK:
+            self.__lblLed.set_markup("<span background='green'><big>    </big></span>")
+        else:
+            self.__lblLed.set_markup("<span background='red'><big>    </big></span>")
     def invia(self, richi):
-
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((HOST, PORT))
-            s.sendall(richi)
-            #data = s.recv(1024)
-
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((HOST, PORT))
+                s.sendall(richi)
+                data = s.recv(1024)
+                return data
+        except:
+            return segnali.NOK
         # print(f"Received {data!r}")
     def on_cancella_clicked(self):
         self.__invia(b"Hello, world")

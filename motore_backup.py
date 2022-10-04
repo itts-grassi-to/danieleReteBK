@@ -48,6 +48,7 @@ class MotoreBackup(bkFile):
                             conn.sendall(segnali.OK)
                     elif data == segnali.RESTART:
                         self.__impoIni=1
+                        conn.sendall(segnali.OK)
                     # print(data)
 
     def __settaVariabiliComunicazione(self, path_fpar, fine, impo):
