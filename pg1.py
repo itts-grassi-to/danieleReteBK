@@ -2,7 +2,7 @@
 # ## daniele.ortu@itisgrassi.edu.it
 
 class Pg1:
-    def __init__(self, ch, builder, bks):
+    def __init__(self,  builder, ch, bks):
         # print(bks)
         self._bks = bks
         self.__bk = bks['bks'][ch]
@@ -37,28 +37,28 @@ class Pg1:
         self.__txtMailTO.set_text(self.__altro['mailTO'])
 
     def __salva_cron(self):
-        self.__bk['cron']['minuto'] = self.txtMin.get_text()
-        self.__bk['cron']['ora'] = self.txtOra.get_text()
-        self.__bk['cron']['giorno'] = self.txtGio.get_text()
-        self.__bk['cron']['mese'] = self.txtMese.get_text()
+        self.__bk['cron']['minuto'] = self.__txtMin.get_text()
+        self.__bk['cron']['ora'] = self.__txtOra.get_text()
+        self.__bk['cron']['giorno'] = self.__txtGio.get_text()
+        self.__bk['cron']['mese'] = self.__txtMese.get_text()
         self.__bk['cron']['settimana'] = []
-        if self.chDom.get_active():
+        if self.__ckDom.get_active():
             self.__bk['cron']['settimana'].append(0)
-        if self.chLun.get_active():
+        if self.__ckLun.get_active():
             self.__bk['cron']['settimana'].append(1)
-        if self.chMar.get_active():
+        if self.__ckMar.get_active():
             self.__bk['cron']['settimana'].append(2)
-        if self.chMer.get_active():
+        if self.__ckMer.get_active():
             self.__bk['cron']['settimana'].append(3)
-        if self.chGio.get_active():
+        if self.__ckGio.get_active():
             self.__bk['cron']['settimana'].append(4)
-        if self.chVen.get_active():
+        if self.__ckVen.get_active():
             self.__bk['cron']['settimana'].append(5)
-        if self.chSab.get_active():
+        if self.__ckSab.get_active():
             self.__bk['cron']['settimana'].append(6)
     def __salva_altro(self):
-        self.bks['altro']['mailFROM'] = self.txtMailFrom.get_text()
-        self.bks['altro']['mailTO'] = self.txtMailTO.get_text()
+        self._bks['altro']['mailFROM'] = self.__txtMailFROM.get_text()
+        self._bks['altro']['mailTO'] = self.__txtMailTO.get_text()
 
     def __is_active(self, giorno):
         if self.__bk['cron']['settimana'] == '*':
@@ -68,4 +68,4 @@ class Pg1:
     def getBKS(self):
         self.__salva_cron()
         self.__salva_altro()
-        return self.bks
+        return self._bks
