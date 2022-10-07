@@ -110,6 +110,5 @@ class GMain:
         with open(self.path_fconf, "w") as data:
             data.write(str(self.__configurazione))
             data.close()
-
     def test(self):
         print("prova**************************")

@@ -28,7 +28,8 @@ class Eventi:
         )
         dialog.run()
         dialog.destroy()
-
+    def on_rd_toggled(self, rd, name):
+        print("togled")
     def on_click_annulla(self, button):
         pass
 
@@ -41,7 +42,7 @@ class MainConfig(Pg1, Pg23):
         self.__builder.add_from_file(GLADE)
         self.__builder.connect_signals(Eventi())
         Pg1.__init__(self, builder, "pr", self.__bks)
-        Pg23.__init__(self, builder, "pr", self.__bks)
+        Pg23.__init__(self, 1, builder, "pr", self.__bks)
 
     def getWin(self):
         return self.__builder.get_object('MainWinConfig')
