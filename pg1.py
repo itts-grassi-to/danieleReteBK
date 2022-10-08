@@ -65,7 +65,7 @@ class Pg1:
             return True
         return giorno in self.__bk['cron']['settimana']
 
-    def getBKS(self):
+    def salvaPG1(self):
         self.__salva_cron()
         self.__salva_altro()
         return self._bks

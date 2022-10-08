@@ -17,7 +17,7 @@ GLADE = os.path.join(CURRDIR, 'mainConfig.glade')
 
 class Eventi:
     def on_click_nuovo(self, button):
-        mc.getBKS()
+        mc.salvaPG1()
         print(mc._bks)
         dialog = Gtk.MessageDialog(
             transient_for=None,
@@ -28,32 +28,38 @@ class Eventi:
         )
         dialog.run()
         dialog.destroy()
-    def on_rd_toggled(self, rd, name):
-        print("togled")
+    def on_click_rd_origine_loc(self, rd):
+        print("click origine")
+        mc.pg2.on_rd_click()
+    def on_click_rd_destinazione_loc(self, rd):
+        print("Click destinazione")
+        mc.pg3.on_rd_click()
+    def on_currdir_changed(self,widget):
+       print(mc.pg2.getBtLocPathText())
     def on_click_annulla(self, button):
         pass
 
-class MainConfig(Pg1, Pg23):
+class MainConfig(Pg1):
     def __init__(self, builder):
         self.__builder = builder
         with open(PATH_CONF, "r") as f:
             self.__bks = ast.literal_eval(f.read())
             f.close()
         self.__builder.add_from_file(GLADE)
-        self.__builder.connect_signals(Eventi())
         Pg1.__init__(self, builder, "pr", self.__bks)
-        Pg23.__init__(self, 1, builder, "pr", self.__bks)
+        self.pg2 = Pg23(2, builder, "pr", self.__bks)
+        self.pg3 = Pg23(3, builder, "pr", self.__bks)
 
     def getWin(self):
         return self.__builder.get_object('MainWinConfig')
 
 
 builder = Gtk.Builder()
-mc=MainConfig(builder)
-
+mc = MainConfig(builder)
+builder.connect_signals(Eventi())
 # pg1 = Pg1("pr", builder, bks)
 
-window =mc.getWin()
+window = mc.getWin()
 
 
 window.set_title("GIGI")
