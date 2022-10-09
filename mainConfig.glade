@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkWindow" id="MainWinConfig">
@@ -482,8 +482,7 @@
                         <property name="action">select-folder</property>
                         <property name="local-only">False</property>
                         <property name="title" translatable="yes">Scegli la cartella da backuppare</property>
-                        <signal name="current-folder-changed" handler="on_currdir_changed" swapped="no"/>
-                        <signal name="selection-changed" handler="on_currdir_changed" swapped="no"/>
+                        <signal name="selection-changed" handler="on__ori_loc_currdir_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -549,9 +548,47 @@
                           <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="spacing">35</property>
+                            <property name="halign">start</property>
+                            <property name="spacing">40</property>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="lblProtocollo">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">Tipo</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="cmbOrigineProtocollo">
+                                <property name="width-request">104</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="halign">start</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="spacing">39</property>
+                            <child>
+                              <object class="GtkLabel" id="lblHost">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Host</property>
@@ -578,16 +615,16 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="spacing">20</property>
+                            <property name="spacing">25</property>
                             <child>
-                              <object class="GtkLabel" id="txtOrigineUser">
+                              <object class="GtkLabel" id="lblUtente">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Utente</property>
@@ -614,14 +651,15 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox" id="txtOrigine">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="spacing">35</property>
+                            <property name="margin-top">4</property>
+                            <property name="spacing">40</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
@@ -638,7 +676,7 @@
                               <object class="GtkEntry" id="txtOrigineRemPath">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="width-chars">35</property>
+                                <property name="width-chars">62</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -650,7 +688,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">3</property>
                           </packing>
                         </child>
                       </object>
@@ -726,11 +764,13 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="btDestinazioneLocPath">
-                        <property name="label" translatable="yes">---</property>
+                      <object class="GtkFileChooserButton" id="btDestinazioneLocPath">
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="action">select-folder</property>
+                        <property name="local-only">False</property>
+                        <property name="title" translatable="yes">Scegli la cartella da backuppare</property>
+                        <signal name="selection-changed" handler="on__dst_loc_currdir_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -797,9 +837,47 @@
                           <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="spacing">37</property>
+                            <child>
+                              <object class="GtkLabel" id="lblProtocollo1">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">Tipo</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="cmbDestinazioneProtocollo">
+                                <property name="width-request">104</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="halign">start</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
                             <property name="spacing">35</property>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="lblHos">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Host</property>
@@ -826,7 +904,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -835,7 +913,7 @@
                             <property name="can-focus">False</property>
                             <property name="spacing">20</property>
                             <child>
-                              <object class="GtkLabel" id="txtOrigineUser1">
+                              <object class="GtkLabel" id="lblUtent">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Utente</property>
@@ -862,16 +940,16 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox" id="txtOrigine1">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="spacing">35</property>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="lblPat">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Path</property>
@@ -898,7 +976,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">3</property>
                           </packing>
                         </child>
                       </object>
@@ -970,7 +1048,7 @@
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="margin-end">10</property>
-                <signal name="clicked" handler="on_click_nuovo" swapped="no"/>
+                <signal name="clicked" handler="on_click_salva" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

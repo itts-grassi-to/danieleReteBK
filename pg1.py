@@ -36,6 +36,11 @@ class Pg1:
         self.__txtMailTO = builder.get_object('txtMailTO')
         self.__txtMailTO.set_text(self.__altro['mailTO'])
 
+    def __is_active(self, giorno):
+        if self.__bk['cron']['settimana'] == '*':
+            return True
+        return giorno in self.__bk['cron']['settimana']
+
     def __salva_cron(self):
         self.__bk['cron']['minuto'] = self.__txtMin.get_text()
         self.__bk['cron']['ora'] = self.__txtOra.get_text()
@@ -60,10 +65,6 @@ class Pg1:
         self._bks['altro']['mailFROM'] = self.__txtMailFROM.get_text()
         self._bks['altro']['mailTO'] = self.__txtMailTO.get_text()
 
-    def __is_active(self, giorno):
-        if self.__bk['cron']['settimana'] == '*':
-            return True
-        return giorno in self.__bk['cron']['settimana']
 
     def salvaPG1(self):
         self.__salva_cron()

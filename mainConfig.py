@@ -16,38 +16,71 @@ PATH_CONF = os.path.join(CURRDIR, 'danieleReteBK.conf')
 GLADE = os.path.join(CURRDIR, 'mainConfig.glade')
 
 class Eventi:
-    def on_click_nuovo(self, button):
+    def on_click_salva(self, button):
         mc.salvaPG1()
+        mc.pg2.on_salva()
+        mc.pg3.on_salva()
         print(mc._bks)
+        with open(PATH_CONF,'w') as f:
+            f.write(str(mc._bks))
+            f.close()
         dialog = Gtk.MessageDialog(
             transient_for=None,
             flags=0,
             message_type=Gtk.MessageType.INFO,
             buttons=Gtk.ButtonsType.CLOSE,
-            text="Salvato generale"
+            text="Salvato impostazioni"
         )
         dialog.run()
         dialog.destroy()
+
+    def on_click_monta(self, button):
+        print("click monta")
+        r = mc.pg2.on_mount(CURRDIR)
+        if r != "":
+            dialog = Gtk.MessageDialog(
+                transient_for=None,
+                flags=0,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.CLOSE,
+                text=r
+            )
+        else:
+            dialog = Gtk.MessageDialog(
+                transient_for=None,
+                flags=0,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.CLOSE,
+                text="Ho montato la directory"
+            )
+        dialog.run()
+        dialog.destroy()
+
     def on_click_rd_origine_loc(self, rd):
-        print("click origine")
+       # print("click origine")
         mc.pg2.on_rd_click()
     def on_click_rd_destinazione_loc(self, rd):
         print("Click destinazione")
         mc.pg3.on_rd_click()
-    def on_currdir_changed(self,widget):
-       print(mc.pg2.getBtLocPathText())
+    def on__ori_loc_currdir_changed(self,widget):
+       #print(mc.pg2.getBtLocPathText())
+        mc.pg2.setTxtLocPath(mc.pg2.getBtLocPathText())
+    def on__dst_loc_currdir_changed(self,widget):
+       #print(mc.pg2.getBtLocPathText())
+        mc.pg3.setTxtLocPath(mc.pg2.getBtLocPathText())
+
     def on_click_annulla(self, button):
         pass
 
 class MainConfig(Pg1):
-    def __init__(self, builder):
+    def __init__(self, ch, builder):
         self.__builder = builder
         with open(PATH_CONF, "r") as f:
             self.__bks = ast.literal_eval(f.read())
             f.close()
         self.__builder.add_from_file(GLADE)
         Pg1.__init__(self, builder, "pr", self.__bks)
-        self.pg2 = Pg23(2, builder, "pr", self.__bks)
+        self.pg2 = Pg23( 2, builder, "pr", self.__bks)
         self.pg3 = Pg23(3, builder, "pr", self.__bks)
 
     def getWin(self):
