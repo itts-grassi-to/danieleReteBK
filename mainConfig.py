@@ -13,16 +13,19 @@ from pg2_3 import Pg23
 
 CURRDIR = os.path.dirname(os.path.abspath(__file__))
 PATH_CONF = os.path.join(CURRDIR, 'danieleReteBK.conf')
-GLADE = os.path.join(CURRDIR, 'mainConfig.glade')
+GLADE = os.path.join(CURRDIR, 'config.glade')
 
-class Eventi:
+class EventiConfig:
+
+    def __init__(self, obj):
+        self.__mc = obj
     def on_click_salva(self, button):
-        mc.salvaPG1()
-        mc.pg2.on_salva()
-        mc.pg3.on_salva()
-        print(mc._bks)
+        self.__mc.salvaPG1()
+        self.__mc.pg2.on_salva()
+        self.__mc.pg3.on_salva()
+        print(self.__mc._bks)
         with open(PATH_CONF,'w') as f:
-            f.write(str(mc._bks))
+            f.write(str(self.__mc._bks))
             f.close()
         dialog = Gtk.MessageDialog(
             transient_for=None,
@@ -36,7 +39,7 @@ class Eventi:
 
     def on_click_monta(self, button):
         print("click monta")
-        r = mc.pg2.on_mount(CURRDIR)
+        r = self.__mc.pg2.on_mount(CURRDIR)
         if r != "":
             dialog = Gtk.MessageDialog(
                 transient_for=None,
@@ -58,22 +61,22 @@ class Eventi:
 
     def on_click_rd_origine_loc(self, rd):
        # print("click origine")
-        mc.pg2.on_rd_click()
+        self.__mc.pg2.on_rd_click()
     def on_click_rd_destinazione_loc(self, rd):
         print("Click destinazione")
-        mc.pg3.on_rd_click()
+        self.__mc.pg3.on_rd_click()
     def on__ori_loc_currdir_changed(self,widget):
-       #print(mc.pg2.getBtLocPathText())
-        mc.pg2.setTxtLocPath(mc.pg2.getBtLocPathText())
+        #print(self.__mc.pg2.getBtLocPathText())
+        self.__mc.pg2.setTxtLocPath(self.__mc.pg2.getBtLocPathText())
     def on__dst_loc_currdir_changed(self,widget):
-       #print(mc.pg2.getBtLocPathText())
-        mc.pg3.setTxtLocPath(mc.pg2.getBtLocPathText())
+        #print(self.__mc.pg3.getBtLocPathText())
+        self.__mc.pg3.setTxtLocPath(self.__mc.pg3.getBtLocPathText())
 
     def on_click_annulla(self, button):
         pass
 
 class MainConfig(Pg1):
-    def __init__(self, ch, builder):
+    def __init__(self,  ch, builder):
         self.__builder = builder
         with open(PATH_CONF, "r") as f:
             self.__bks = ast.literal_eval(f.read())
@@ -87,17 +90,17 @@ class MainConfig(Pg1):
         return self.__builder.get_object('MainWinConfig')
 
 
-builder = Gtk.Builder()
-mc = MainConfig(builder)
-builder.connect_signals(Eventi())
+# builder = Gtk.Builder()
+# mc = MainConfig("pr", builder)
+# builder.connect_signals(EventiConfig())
 # pg1 = Pg1("pr", builder, bks)
 
-window = mc.getWin()
+# window = mc.getWin()
 
 
-window.set_title("GIGI")
+# window.set_title("GIGI")
 # window.set_icon_from_file(ICON)
-window.connect("destroy", Gtk.main_quit)
-window.show_all()
+# window.connect("destroy", Gtk.main_quit)
+# window.show_all()
 
-Gtk.main()
+# Gtk.main()
