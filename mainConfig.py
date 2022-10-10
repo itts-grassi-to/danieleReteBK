@@ -82,9 +82,9 @@ class MainConfig(Pg1):
             self.__bks = ast.literal_eval(f.read())
             f.close()
         self.__builder.add_from_file(GLADE)
-        Pg1.__init__(self, builder, "pr", self.__bks)
-        self.pg2 = Pg23( 2, builder, "pr", self.__bks)
-        self.pg3 = Pg23(3, builder, "pr", self.__bks)
+        Pg1.__init__(self, builder, ch, self.__bks)
+        self.pg2 = Pg23(2, builder, ch, self.__bks)
+        self.pg3 = Pg23(3, builder, ch, self.__bks)
 
     def getWin(self):
         return self.__builder.get_object('MainWinConfig')

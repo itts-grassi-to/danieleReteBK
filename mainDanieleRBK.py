@@ -9,6 +9,7 @@ import segnali
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
+from mainNuovo import MainNuovo
 from mainConfig import MainConfig, EventiConfig
 
 CURRDIR = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +27,7 @@ class Eventi:
         pass
     def on_click_nuovo(self, button):
         print("Click nuovo")
+        gestione.on_nuovo_clicked()
         #gestione.on_nuovo_clicked(lstBKS)
     def on_click_modifica(self, button):
         #gestione.on_modifica_clicked()
@@ -42,10 +44,13 @@ class Eventi:
             dialog.destroy()
             return
         builder = Gtk.Builder()
-        mc = MainConfig("pr", builder)
+        ch = lst.get_selected_row().get_child().get_children()[1].get_label()
+        tit = lst.get_selected_row().get_child().get_children()[0].get_text()
+        #print(ch)
+        mc = MainConfig(ch, builder)
         builder.connect_signals(EventiConfig(mc))
         window = mc.getWin()
-        window.set_title("Modifica ")
+        window.set_title("Modifico "+tit)
         window.set_modal(True)
         # window.set_icon_from_file(ICON)
         window.connect("destroy", Gtk.main_quit)
@@ -53,7 +58,7 @@ class Eventi:
 
         Gtk.main()
     def on_click_cancella(self, button):
-        pass
+        gestione.on_cancella_clicked()
     def on_show_click_menu(self, button):
         print("clicked onshow")
         gestione.on_show_click()
@@ -124,20 +129,43 @@ class GMain:
     def __on_toggled_ck(self, ck):
         ch = ck.get_label()
         self.__bks[ch]['attivo'] = ck.get_active()
-        with open(self.path_fconf, "w") as data:
+        with open(PATH_CONF, "w") as data:
             data.write(str(self.__configurazione))
             data.close()
     def on_cancella_clicked(self):
-        self.__invia(b"Hello, world")
-    def on_nuovo_clicked(self, lst):
+        #print("Hello, world")
+        if not self.__lstBKS.get_selected_row():
+            dialog = Gtk.MessageDialog(
+                transient_for=None,
+                flags=0,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.CLOSE,
+                text="Seleziona il backup da cancellare",
+            )
+            dialog.run()
+            dialog.destroy()
+            return
+
+        i = self.__lstBKS.get_selected_row().get_index()
+        ch = self.__lstBKS.get_selected_row().get_child().get_children()[1].get_label()
+        self.__lstBKS.remove(
+                self.__lstBKS.get_row_at_index(i)
+        )
+        del self.__configurazione['bks'][ch]
+        with open(PATH_CONF,'w') as f:
+            f.write(str(self.__configurazione))
+            f.close()
+
+
+    def on_nuovo_clicked(self):
         # print("NUOVO")
-        w = DlgNuovo(self, self.path_fconf)
-        w.connect("destroy", Gtk.main_quit)
-        w.set_modal(True)
-        w.show_all()
-        Gtk.main()
-        self.__bks = self.get_impostazioni(self.path_fconf)['bks']
-        # lst.add(self.__attach_row(self.lst_chiavi.pop()))
+        nv = MainNuovo(CURRDIR, PATH_CONF)
+        nv.run()
+        self.__configurazione = nv.cnf
+        self.__bks = nv.cnf['bks']
+        self.__lstBKS.add(self.__attach_row(nv.ch))
+        self.__lstBKS.show_all()
+
     def on_show_click(self):
         self.__pop.popup()
     def getWin(self):

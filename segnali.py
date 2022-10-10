@@ -7,3 +7,4 @@ NON_ATTIVO = b"psnn"
 RESTART = b"rs"
 OK = b"ok"
 NOK = b"nok"
+
