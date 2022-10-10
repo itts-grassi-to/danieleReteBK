@@ -3,6 +3,8 @@
 import os
 import gi
 import ast
+import socket
+import segnali
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -36,6 +38,17 @@ class EventiConfig:
         )
         dialog.run()
         dialog.destroy()
+        self.__invia(segnali.RESTART)
+    def __invia(self, richi):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((segnali.HOST, segnali.PORT))
+                s.sendall(richi)
+                data = s.recv(1024)
+                return data
+        except:
+            return segnali.NOK
+        # print(f"Received {data!r}")
 
     def on_click_monta(self, button):
         print("click monta")

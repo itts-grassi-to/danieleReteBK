@@ -5,6 +5,7 @@ import gi
 import os
 import ast
 import segnali
+import socket
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -55,7 +56,6 @@ class Eventi:
         # window.set_icon_from_file(ICON)
         window.connect("destroy", Gtk.main_quit)
         window.show_all()
-
         Gtk.main()
     def on_click_cancella(self, button):
         gestione.on_cancella_clicked()
@@ -85,6 +85,7 @@ class GMain:
     def getLstBKS(self):
         return self.__lstBKS
     def __setLed(self):
+        print("setled")
         if self.invia(segnali.IS_ATTIVO) == segnali.OK:
             self.__lblLed.set_markup("<span background='green'><big>    </big></span>")
         else:
@@ -92,7 +93,7 @@ class GMain:
     def invia(self, richi):
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.connect((HOST, PORT))
+                s.connect((segnali.HOST, segnali.PORT))
                 s.sendall(richi)
                 data = s.recv(1024)
                 return data
@@ -155,8 +156,6 @@ class GMain:
         with open(PATH_CONF,'w') as f:
             f.write(str(self.__configurazione))
             f.close()
-
-
     def on_nuovo_clicked(self):
         # print("NUOVO")
         nv = MainNuovo(CURRDIR, PATH_CONF)
@@ -165,7 +164,6 @@ class GMain:
         self.__bks = nv.cnf['bks']
         self.__lstBKS.add(self.__attach_row(nv.ch))
         self.__lstBKS.show_all()
-
     def on_show_click(self):
         self.__pop.popup()
     def getWin(self):

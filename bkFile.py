@@ -55,8 +55,20 @@ class bkFile():
         self._remotoDA = data['dirDA']["remoto"]
         self._remotoTO = data['dirTO']["remoto"]
         self._dirBASE = CURRDIR
-        self._dirDA = data['dirDA']["da"]
-        self._dirBK = data['dirTO']["to"]
+        if self._remotoDA:
+            self._dirDA = data['dirDA']['utente'] +'@' + \
+                data['dirDA']["host"] + ":" + \
+                data['dirDA']["rem_path"]
+            self._protocolloDA = data['dirDA']["protocollo"]
+        else:
+            self._dirDA = data['dirDA']["loc_path"]
+        if self._remotoTO:
+            self._dirBK = data['dirTO']['utente'] + '@' + \
+                data['dirTO']["host"] + ":" + \
+                data['dirTO']["rem_path"]
+            self._protocolloTO = data['dirDA']["protocollo"]
+        else:
+            self._dirBK = data['dirTO']["loc_path"]
         self._mntDA = data['dirDA']["mnt"]
         self._mntTO = data['dirTO']["mnt"]
         self._nome = ch
@@ -72,7 +84,7 @@ class bkFile():
             self._flog.write("\nMonto directory da backuppare: " + self._dirDA)
             mntDA = self._dirBASE + "/" + self._mntDA
             if not self.__isMount(self._dirDA):
-                r = subprocess.run(["sshfs", self._dirDA, mntDA],
+                r = subprocess.run([self._protocolloDA, self._dirDA, mntDA],
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 if r.stderr:
                     self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
@@ -86,7 +98,7 @@ class bkFile():
             self._flog.write("\nMonto directory dei backup: " + self._dirBK)
             mntTO = self._dirBASE + "/" + self._mntTO
             if not self.__isMount(self._dirBK):
-                r = subprocess.run(["sshfs", self._dirBK, mntTO], stdout=subprocess.PIPE,
+                r = subprocess.run([self._protocolloTO, self._dirBK, mntTO], stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
                 if r.stderr:
                     self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
@@ -121,6 +133,7 @@ class bkFile():
         self._printa("MAIL INVIATA: mail -s  '" + self._nome + "' server.backup@itisgrassi.edu.it < " + self._path_flog)
 
     def __backuppa(self):
+        print("Inizio backup")
         self._flog.write("\n*********Inizio il processo di backup************")
         self._flog.write("\nUso come base: " + self._latestDIR)
         attr = '-auv --link-dest "' + self._latestDIR + '" --exclude=".cache" '

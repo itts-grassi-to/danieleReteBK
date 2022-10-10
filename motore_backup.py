@@ -9,9 +9,7 @@ import time
 import socket
 import segnali
 
-HOST = "127.0.0.1"
-PORT = 65432
-DIM_BUFFER = 1024
+
 
 from bkFile import *
 
@@ -35,7 +33,7 @@ class MotoreBackup(bkFile):
         threading.Thread(target=self.__th_ascolta, args=()).start()
     def __th_ascolta(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((HOST, PORT))
+            s.bind((segnali.HOST, segnali.PORT))
             s.listen()
             while True:
                 print("Attendo connessione")
