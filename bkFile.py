@@ -56,17 +56,19 @@ class bkFile():
         self._remotoTO = data['dirTO']["remoto"]
         self._dirBASE = CURRDIR
         if self._remotoDA:
-            self._dirDA = data['dirDA']['utente'] +'@' + \
-                data['dirDA']["host"] + ":" + \
-                data['dirDA']["rem_path"]
             self._protocolloDA = data['dirDA']["protocollo"]
+            if self._protocolloDA=='sshfs':
+                self._dirDA = data['dirDA']['utente'] +'@' + \
+                    data['dirDA']["host"] + ":" + \
+                    data['dirDA']["rem_path"]
         else:
             self._dirDA = data['dirDA']["loc_path"]
         if self._remotoTO:
-            self._dirBK = data['dirTO']['utente'] + '@' + \
-                data['dirTO']["host"] + ":" + \
-                data['dirTO']["rem_path"]
             self._protocolloTO = data['dirDA']["protocollo"]
+            if self._protocolloTO == 'sshfs':
+                self._dirBK = data['dirTO']['utente'] + '@' + \
+                    data['dirTO']["host"] + ":" + \
+                    data['dirTO']["rem_path"]
         else:
             self._dirBK = data['dirTO']["loc_path"]
         self._mntDA = data['dirDA']["mnt"]
@@ -79,18 +81,34 @@ class bkFile():
         self._nomeStatoFile = "stf.bin"
         self.__nomeTAR = self._do + "-" + self._nome + ".tar.gz"
 
-    def __inizializza_paths(self):
-        if self._remotoDA:
-            self._flog.write("\nMonto directory da backuppare: " + self._dirDA)
-            mntDA = self._dirBASE + "/" + self._mntDA
-            if not self.__isMount(self._dirDA):
-                r = subprocess.run([self._protocolloDA, self._dirDA, mntDA],
+    def _monta(self, proto, dir,  mnt):
+        self._flog.write("\nMonto con protocollo: " + proto)
+        if proto == 'sshfs':
+            r = subprocess.run([proto, dir, mnt],
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if r.stderr:
+                self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
+                self.initOK = False
+                return False
+            elif proto == 'smb':
+                # mount -t cifs -o vers=1.0,username=uffici,password=77ykgUU //172.16.200.100/Volume_1 /mnt/NAS
+                r = subprocess.run(['mount', '-t', 'cifs', '-o',
+                            'vers=1.0,username=uffici,password=77ykgUU', dir, mnt],
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 if r.stderr:
                     self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
                     self.initOK = False
                     return False
-                self._flog.write("\nDirectory montata")
+    def __inizializza_paths(self):
+
+        self._flog.write("\nMonto con protocollo: " + self._dirDA)
+        if self._remotoDA:
+            self._flog.write("\nMonto directory da backuppare: " + self._dirDA)
+            mntDA = self._dirBASE + "/" + self._mntDA
+            if not self.__isMount(self._dirDA):
+                if not self._monta(self._protocolloDA, self._dirDA, mntDA):
+                    return False
+                self._flog.write("\nDirectory origine montata")
             else:
                 self._flog.write("\nDirectory GIA montata")
             self._dirDA = mntDA
@@ -98,13 +116,9 @@ class bkFile():
             self._flog.write("\nMonto directory dei backup: " + self._dirBK)
             mntTO = self._dirBASE + "/" + self._mntTO
             if not self.__isMount(self._dirBK):
-                r = subprocess.run([self._protocolloTO, self._dirBK, mntTO], stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-                if r.stderr:
-                    self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
-                    self.initOK = False
+                if not self._monta(self._protocolloTO, self._dirBK, mntTO):
                     return False
-                self._flog.write("\nDirectory montata")
+                self._flog.write("\nDirectory di backup montata")
             else:
                 self._flog.write("\nDirectory GIA montata")
             self._dirBK = mntTO

@@ -54,13 +54,6 @@ class MotoreBackup(bkFile):
         fpar.write((fine + impo).encode("utf-8"))
         fpar.close()
 
-    # def __leggiVariabiliComunicazione(self, fpar):
-    #    fpar.seek(0, 0)
-    #    tmp = fpar.read(2)
-    #    self.__thFine = tmp[0] - 48
-    #    self.__impoIni = tmp[1] - 48
-        # print(tmp,self.__thFine,self.__impoIni)
-
     def __set_restart_impostazioni(self):
         self.__impoIni = 1
 
@@ -87,10 +80,6 @@ class MotoreBackup(bkFile):
         # st = True
         stesso_minuto = {}
         # print(self.__nomePS)
-        # if self._is_running(self.__nomePS):
-        #    print("motore_backup - esegui: Processo attivo")
-        #    return
-        #self.__settaVariabiliComunicazione(self._path_fpar, "0", "0")
         print("AVVIO il motore.. brum brum")
         while self.__thFine == 0:
             # print("ATTIVO")
