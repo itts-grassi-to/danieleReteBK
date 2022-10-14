@@ -61,23 +61,27 @@ class bkFile():
                 self._dirDA = data['dirDA']['utente'] +'@' + \
                     data['dirDA']["host"] + ":" + \
                     data['dirDA']["rem_path"]
+            elif self._protocolloDA == 'smb':
+                self._dirDA = data['dirDA']["rem_path"]
         else:
             self._dirDA = data['dirDA']["loc_path"]
         if self._remotoTO:
-            self._protocolloTO = data['dirDA']["protocollo"]
+            self._protocolloTO = data['dirTO']["protocollo"]
             if self._protocolloTO == 'sshfs':
-                self._dirBK = data['dirTO']['utente'] + '@' + \
+                self._dirTO = data['dirTO']['utente'] + '@' + \
                     data['dirTO']["host"] + ":" + \
                     data['dirTO']["rem_path"]
+            elif self._protocolloTO == 'smb':
+                self._dirTO = data['dirTO']["rem_path"]
         else:
-            self._dirBK = data['dirTO']["loc_path"]
+            self._dirTO = data['dirTO']["loc_path"]
         self._mntDA = data['dirDA']["mnt"]
         self._mntTO = data['dirTO']["mnt"]
         self._nome = ch
         self._path_flog = CURRDIR + "/" + self._nome + ".log"
         self._flog = open(self._path_flog, "w")
         self._do = datetime.today().strftime('%Y-%m-%d-%H-%M-%S')
-        self._latestDIR = self._dirBK + "/" + "latestDIR"
+        self._latestDIR = self._dirTO + "/" + "latestDIR"
         self._nomeStatoFile = "stf.bin"
         self.__nomeTAR = self._do + "-" + self._nome + ".tar.gz"
 
@@ -90,40 +94,43 @@ class bkFile():
                 self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
                 self.initOK = False
                 return False
-            elif proto == 'smb':
-                # mount -t cifs -o vers=1.0,username=uffici,password=77ykgUU //172.16.200.100/Volume_1 /mnt/NAS
-                r = subprocess.run(['mount', '-t', 'cifs', '-o',
-                            'vers=1.0,username=uffici,password=77ykgUU', dir, mnt],
-                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                if r.stderr:
-                    self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
-                    self.initOK = False
-                    return False
+        elif proto == 'smb':
+            # mount -t cifs -o vers=1.0,username=uffici,password=77ykgUU //172.16.200.100/Volume_1 /mnt/NAS
+            r = subprocess.run(['mount', '-t', 'cifs', '-o',
+            #            'vers=1.0,username=uffici,password=77ykgUU', dir, mnt],
+                        'vers=1.0,username=daniele,password=ortu', dir, mnt],
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if r.stderr:
+                self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
+                self.initOK = False
+                return False
     def __inizializza_paths(self):
 
-        self._flog.write("\nMonto con protocollo: " + self._dirDA)
+        # self._flog.write("\nMonto con protocollo: " + self._dirDA)
         if self._remotoDA:
             self._flog.write("\nMonto directory da backuppare: " + self._dirDA)
             mntDA = self._dirBASE + "/" + self._mntDA
             if not self.__isMount(self._dirDA):
                 if not self._monta(self._protocolloDA, self._dirDA, mntDA):
+                    self._flog.close()
                     return False
                 self._flog.write("\nDirectory origine montata")
             else:
                 self._flog.write("\nDirectory GIA montata")
             self._dirDA = mntDA
         if self._remotoTO:
-            self._flog.write("\nMonto directory dei backup: " + self._dirBK)
+            self._flog.write("\nMonto directory dei backup: " + self._dirTO)
             mntTO = self._dirBASE + "/" + self._mntTO
-            if not self.__isMount(self._dirBK):
-                if not self._monta(self._protocolloTO, self._dirBK, mntTO):
+            if not self.__isMount(self._dirTO):
+                if not self._monta(self._protocolloTO, self._dirTO, mntTO):
+                    self._flog.close()
                     return False
                 self._flog.write("\nDirectory di backup montata")
             else:
                 self._flog.write("\nDirectory GIA montata")
-            self._dirBK = mntTO
+            self._dirTO = mntTO
 
-            self._latestDIR = self._dirBK + "/" + "latestDIR" + self._mntTO
+            self._latestDIR = self._dirTO + "/" + "latestDIR" + self._mntTO
         self._flog.write("\nFine inizializzazione processo")
         return True
 
@@ -143,7 +150,9 @@ class bkFile():
         self._flog.close()
         if mail and not DEBUG:
             dummy = 0
-            os.system("mail -s  '" + self._nome + "' server.backup@itisgrassi.edu.it < " + self._path_flog)
+            m = "mail -s  '" + self._nome + "' server.backup@itisgrassi.edu.it < " + self._path_flog
+            os.system(m)
+            print(m)
         self._printa("MAIL INVIATA: mail -s  '" + self._nome + "' server.backup@itisgrassi.edu.it < " + self._path_flog)
 
     def __backuppa(self):
@@ -151,7 +160,7 @@ class bkFile():
         self._flog.write("\n*********Inizio il processo di backup************")
         self._flog.write("\nUso come base: " + self._latestDIR)
         attr = '-auv --link-dest "' + self._latestDIR + '" --exclude=".cache" '
-        dirBK = self._dirBK + "/" + self._do + "-" + self._nome
+        dirBK = self._dirTO + "/" + self._do + "-" + self._nome
         rsync = "rsync " + attr + "\n\t" + self._dirDA + "/\n\t" + dirBK + "\n\t > " + self._path_flog
         self._flog.write("\n" + rsync)
         r = os.system("rsync " + attr + self._dirDA + "/ " + dirBK + " > " + self._path_flog)
@@ -159,10 +168,10 @@ class bkFile():
         self._flog = f = open(self._path_flog, "a")
         self._flog.write("\nRimuovuo: " + self._latestDIR)
         r = os.system("rm -rf " + self._latestDIR)
-        self._flog.write("\nNuova base: " + self._dirBK + "/" + self._do + "-" + self._nome)
+        self._flog.write("\nNuova base: " + self._dirTO + "/" + self._do + "-" + self._nome)
         self._flog.write(
-            "\nCreo link: ln -s " + self._dirBK + "/" + self._do + "-" + self._nome + " " + self._latestDIR)
-        r = os.system("ln -s " + self._dirBK + "/" + self._do + "-" + self._nome + " " + self._latestDIR)
+            "\nCreo link: ln -s " + self._dirTO + "/" + self._do + "-" + self._nome + " " + self._latestDIR)
+        r = os.system("ln -s " + self._dirTO + "/" + self._do + "-" + self._nome + " " + self._latestDIR)
 
         self.__log("\nPROCESSO ESEGUITO CON SUCESSO\n\n", True)
         print("Finito backup")

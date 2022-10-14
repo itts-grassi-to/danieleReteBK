@@ -25,7 +25,7 @@ class EventiConfig:
         self.__mc.salvaPG1()
         self.__mc.pg2.on_salva()
         self.__mc.pg3.on_salva()
-        print(self.__mc._bks)
+        # print(self.__mc._bks)
         with open(PATH_CONF,'w') as f:
             f.write(str(self.__mc._bks))
             f.close()
@@ -51,7 +51,7 @@ class EventiConfig:
         # print(f"Received {data!r}")
 
     def on_click_monta(self, button):
-        print("click monta")
+        # print("click monta")
         r = self.__mc.pg2.on_mount(CURRDIR)
         if r != "":
             dialog = Gtk.MessageDialog(
