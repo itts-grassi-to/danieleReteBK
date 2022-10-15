@@ -62,7 +62,7 @@ class bkFile():
                     data['dirDA']["host"] + ":" + \
                     data['dirDA']["rem_path"]
             elif self._protocolloDA == 'smb':
-                self._dirDA = data['dirDA']["rem_path"]
+                self._dirDA = "//" +  data['dirDA']["host"] + data['dirDA']["rem_path"]
         else:
             self._dirDA = data['dirDA']["loc_path"]
         if self._remotoTO:
@@ -72,7 +72,7 @@ class bkFile():
                     data['dirTO']["host"] + ":" + \
                     data['dirTO']["rem_path"]
             elif self._protocolloTO == 'smb':
-                self._dirTO = data['dirTO']["rem_path"]
+                self._dirTO = "//" + data['dirTO']["host"] + data['dirTO']["rem_path"]
         else:
             self._dirTO = data['dirTO']["loc_path"]
         self._mntDA = data['dirDA']["mnt"]
@@ -81,7 +81,8 @@ class bkFile():
         self._path_flog = CURRDIR + "/" + self._nome + ".log"
         self._flog = open(self._path_flog, "w")
         self._do = datetime.today().strftime('%Y-%m-%d-%H-%M-%S')
-        self._latestDIR = self._dirTO + "/" + "latestDIR"
+        # self._latestDIR = self._dirTO + "/" + "latestDIR"
+        self._latestDIR = CURRDIR + "/" + self._mntTO + "/" + "latestDIR"
         self._nomeStatoFile = "stf.bin"
         self.__nomeTAR = self._do + "-" + self._nome + ".tar.gz"
 
@@ -96,14 +97,33 @@ class bkFile():
                 return False
         elif proto == 'smb':
             # mount -t cifs -o vers=1.0,username=uffici,password=77ykgUU //172.16.200.100/Volume_1 /mnt/NAS
-            r = subprocess.run(['mount', '-t', 'cifs', '-o',
-            #            'vers=1.0,username=uffici,password=77ykgUU', dir, mnt],
-                        'vers=1.0,username=daniele,password=ortu', dir, mnt],
+            # para = 'vers=1.0,username=daniele,password=ortu'
+            para = 'vers=2.0,username=daniele,password=ortu'
+            print('mount -t cifs -o ' + para +' ' + dir + ' ' + mnt)
+            r = subprocess.run(['mount', '-t', 'cifs', '-o', para, dir, mnt],
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if r.stderr:
                 self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
                 self.initOK = False
                 return False
+
+    def __lastDir(self, rootdir):
+        try:
+            for file in os.listdir(rootdir):
+                l = []
+                d = os.path.join(rootdir, file)
+                if os.path.isdir(d):
+                    l.append(d)
+            n = len(l)
+            if n > 0:
+                #return l.reverse()[0]
+                return l[n-1]
+            else:
+                return "urka"
+        except:
+            print(rootdir)
+            return "urkissima"
+
     def __inizializza_paths(self):
 
         # self._flog.write("\nMonto con protocollo: " + self._dirDA)
@@ -130,7 +150,7 @@ class bkFile():
                 self._flog.write("\nDirectory GIA montata")
             self._dirTO = mntTO
 
-            self._latestDIR = self._dirTO + "/" + "latestDIR" + self._mntTO
+            self._latestDIR = self._latestDIR  + self._mntTO
         self._flog.write("\nFine inizializzazione processo")
         return True
 
@@ -152,26 +172,33 @@ class bkFile():
             dummy = 0
             m = "mail -s  '" + self._nome + "' server.backup@itisgrassi.edu.it < " + self._path_flog
             os.system(m)
-            print(m)
+            # print(m)
         self._printa("MAIL INVIATA: mail -s  '" + self._nome + "' server.backup@itisgrassi.edu.it < " + self._path_flog)
 
     def __backuppa(self):
         print("Inizio backup")
         self._flog.write("\n*********Inizio il processo di backup************")
         self._flog.write("\nUso come base: " + self._latestDIR)
-        attr = '-auv --link-dest "' + self._latestDIR + '" --exclude=".cache" '
+        # attr = '-auv --link-dest "' + self._latestDIR + '" --exclude=".cache" '
         dirBK = self._dirTO + "/" + self._do + "-" + self._nome
+        attr = '-auv --link-dest "' + self.__lastDir(self._dirTO) + '" --exclude=".cache" '
         rsync = "rsync " + attr + "\n\t" + self._dirDA + "/\n\t" + dirBK + "\n\t > " + self._path_flog
         self._flog.write("\n" + rsync)
         r = os.system("rsync " + attr + self._dirDA + "/ " + dirBK + " > " + self._path_flog)
         self._flog.close()
         self._flog = f = open(self._path_flog, "a")
-        self._flog.write("\nRimuovuo: " + self._latestDIR)
-        r = os.system("rm -rf " + self._latestDIR)
-        self._flog.write("\nNuova base: " + self._dirTO + "/" + self._do + "-" + self._nome)
-        self._flog.write(
-            "\nCreo link: ln -s " + self._dirTO + "/" + self._do + "-" + self._nome + " " + self._latestDIR)
-        r = os.system("ln -s " + self._dirTO + "/" + self._do + "-" + self._nome + " " + self._latestDIR)
+        #self._flog.write("\nRimuovuo: " + self._latestDIR)
+        #r = os.system("rm -rf " + self._latestDIR)
+        #self._flog.write("\nNuova base: " + self._dirTO + "/" + self._do + "-" + self._nome)
+        #self._flog.write(
+        #    "\nCreo link: ln -s " + self._dirTO + "/" + self._do + "-" + self._nome + " " + self._latestDIR)
+        # r = os.system("ln -s " + self._dirTO + "/" + self._do + "-" + self._nome + " " + self._latestDIR)
+        #r = subprocess.run(["ln", "-s", self._dirTO + "/" + self._do + "-" + self._nome, self._latestDIR],
+        #                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        #if r.stderr:
+        #    self.__log("\nERRORE: " + r.stderr.decode("utf-8"), True)
+        #    self.initOK = False
+        #    return False
 
         self.__log("\nPROCESSO ESEGUITO CON SUCESSO\n\n", True)
         print("Finito backup")
